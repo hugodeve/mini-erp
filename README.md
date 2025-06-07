@@ -149,7 +149,6 @@ Para testar o envio de e-mails localmente, usaremos o Mailtrap.
 ## 💡 Dicas e Boas Práticas
 
 * Verifique sempre se as migrations rodaram corretamente.
-* Caso adicione autenticação, proteja as rotas de administrador.
 * Use logs (`storage/logs/laravel.log`) para debugar falhas de API ou envio de e-mail.
 * Para produção, configure um serviço SMTP real (SendGrid, Mailgun, etc.) e variáveis de ambiente adequadas.
 
@@ -162,6 +161,10 @@ Este projeto está licenciado sob a MIT License. Consulte o arquivo `LICENSE` pa
 ---
 
 **Feliz desenvolvimento!**
+
+**Este projeto foi desenvolvido como teste para a empresa Montink.**
+
+**Criado por Victor Ramirez – Backend Developer**
 
 ```
 ```
