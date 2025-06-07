@@ -1,36 +1,50 @@
 ````markdown
-# Mini-ERP Laravel 11
+# Mini-ERP em Laravel 11
 
-Este documento explica como instalar e usar o mini-ERP em Laravel 11, incluindo a configuração do envio de e-mails via Mailtrap e passos para rodar o projeto em outra máquina.
+Este repositório contém um sistema mínimo de ERP desenvolvido em **Laravel 11** para gerenciamento de **pedidos**, **produtos**, **cupons** e **estoque**. Apresenta funcionalidades essenciais de e‑commerce, incluindo carrinho de compras, cálculo de frete, aplicação de cupons, integração com ViaCEP, envio de e‑mail via Mailtrap e webhook para atualização de status de pedidos.
 
 ---
 
-## 📋 Requisitos
+## Índice
 
-- PHP >= 8.1
-- Composer
-- MySQL
-- Node.js e npm (somente se for compilar assets)
+1. [Requisitos](#requisitos)
+2. [Instalação](#instalação)
+3. [Configuração do Ambiente](#configuração-do-ambiente)
+4. [Banco de Dados](#banco-de-dados)
+5. [Configuração de E-mail (Mailtrap)](#configuração-de-e-mail-mailtrap)
+6. [Execução da Aplicação](#execução-da-aplicação)
+7. [Fluxo de Operações](#fluxo-de-operações)
+8. [Webhook de Atualização de Pedido](#webhook-de-atualização-de-pedido)
+9. [Boas Práticas](#boas-práticas)
+10. [Licença](#licença)
+11. [Créditos](#créditos)
+
+---
+
+## Requisitos
+
+- **PHP** >= 8.1
+- **Composer**
+- **MySQL**
+- **Node.js** e **npm** (opcional, para compilação de assets)
 - Extensões PHP: `OpenSSL`, `PDO`, `Mbstring`, `Tokenizer`, `XML`, `CURL`
-- Acesso à Internet para chamadas ao ViaCEP
+- Conexão com a Internet (para chamadas ao ViaCEP)
 
 ---
 
-## ⚙️ Instalação
+## Instalação
 
 1. Clone o repositório:
-
    ```bash
    git clone https://github.com/seu-usuario/mini-erp.git
    cd mini-erp
 ````
 
-2. Instale as dependências PHP:
+2. Instale dependências PHP:
 
    ```bash
    composer install
    ```
-
 3. (Opcional) Instale dependências JS e compile assets:
 
    ```bash
@@ -40,17 +54,22 @@ Este documento explica como instalar e usar o mini-ERP em Laravel 11, incluindo 
 
 ---
 
-## 🔧 Configuração do Ambiente
+## Configuração do Ambiente
 
-1. Copie o arquivo de ambiente e ajuste as variáveis:
+1. Duplique o arquivo de ambiente:
 
    ```bash
    cp .env.example .env
    ```
-
-2. No `.env`, configure a conexão com MySQL:
+2. Ajuste as variáveis no `.env`:
 
    ```dotenv
+   APP_NAME="Mini-ERP"
+   APP_ENV=local
+   APP_KEY=           # será gerada no próximo passo
+   APP_DEBUG=true
+   APP_URL=http://localhost
+
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
@@ -58,7 +77,6 @@ Este documento explica como instalar e usar o mini-ERP em Laravel 11, incluindo 
    DB_USERNAME=seu_usuario
    DB_PASSWORD=sua_senha
    ```
-
 3. Gere a chave de aplicação:
 
    ```bash
@@ -67,14 +85,15 @@ Este documento explica como instalar e usar o mini-ERP em Laravel 11, incluindo 
 
 ---
 
-## 🗄️ Banco de Dados
+## Banco de Dados
 
 1. Crie o banco no MySQL:
 
    ```sql
-   CREATE DATABASE mini_erp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE mini_erp
+     CHARACTER SET utf8mb4
+     COLLATE utf8mb4_unicode_ci;
    ```
-
 2. Execute as migrations:
 
    ```bash
@@ -83,88 +102,84 @@ Este documento explica como instalar e usar o mini-ERP em Laravel 11, incluindo 
 
 ---
 
-## 📧 Configuração de E-mail (Mailtrap)
+## Configuração de E-mail (Mailtrap)
 
-Para testar o envio de e-mails localmente, usaremos o Mailtrap.
-
-1. Crie uma conta em [mailtrap.io](https://mailtrap.io) e gere um projeto.
-
-2. Copie as credenciais SMTP fornecidas pelo Mailtrap e ajuste no `.env`:
+1. Crie uma conta em [Mailtrap](https://mailtrap.io) e obtenha as credenciais SMTP.
+2. Insira no `.env`:
 
    ```dotenv
    MAIL_MAILER=smtp
    MAIL_HOST=smtp.mailtrap.io
    MAIL_PORT=2525
-   MAIL_USERNAME=SEU_USERNAME_MAILTRAP
-   MAIL_PASSWORD=SEU_PASSWORD_MAILTRAP
+   MAIL_USERNAME=SEU_USERNAME
+   MAIL_PASSWORD=SEU_PASSWORD
    MAIL_ENCRYPTION=null
    MAIL_FROM_ADDRESS=erp@seudominio.com
    MAIL_FROM_NAME="Mini-ERP"
    ```
 
-3. Opcional: você pode visualizar as mensagens enviadas no dashboard do Mailtrap.
+---
+
+## Execução da Aplicação
+
+Inicie o servidor local:
+
+```bash
+php artisan serve
+```
+
+Acesse em: `http://localhost:8000`
 
 ---
 
-## 🚀 Executando o Projeto
+## Fluxo de Operações
 
-1. Inicie o servidor local do Laravel:
-
-   ```bash
-   php artisan serve
-   ```
-
-2. Acesse no navegador: `http://localhost:8000`
-
----
-
-## 🛒 Fluxo de Uso Básico
-
-1. **Produtos**: cadastre produtos e estoques.
-2. **Cupons**: crie cupons com validade e regras de desconto.
-3. **Carrinho**: adicione produtos, aplique cupons e calcule frete.
-4. **Checkout**: informe CEP (busca dados no ViaCEP), número, complemento e e-mail do cliente.
-5. **Finalizar Pedido**: gera o pedido, reduz estoque e dispara e-mail de confirmação.
+1. **Produtos**: cadastre nome, preço, variações e estoque.
+2. **Cupons**: defina códigos, tipos, valores, limites mínimos e validade.
+3. **Carrinho**: adicione itens, aplique cupons e calcule frete.
+4. **Checkout**: preencha CEP (ViaCEP), número, complemento e e‑mail.
+5. **Finalização**: salva pedido, reduz estoque e envia e-mail de confirmação.
 6. **Pedidos**: liste e visualize detalhes; cancele ou atualize status via webhook.
 
 ---
 
-## 🔗 Webhook de Atualização de Pedido
+## Webhook de Atualização de Pedido
 
-* **Rota**: `POST /webhook/pedido-status`
+**Endpoint:** `POST /webhook/pedido-status`
 
-* **Payload JSON**:
+**Payload:**
 
-  ```json
-  {
-    "pedido_id": 123,
-    "status": "cancelado"
-  }
-  ```
+```json
+{
+  "pedido_id": 123,
+  "status": "cancelado"
+}
+```
 
-* Se `status` for `cancelado`, o pedido será removido; senão, apenas atualiza o campo `status`.
-
----
-
-## 💡 Dicas e Boas Práticas
-
-* Verifique sempre se as migrations rodaram corretamente.
-* Use logs (`storage/logs/laravel.log`) para debugar falhas de API ou envio de e-mail.
-* Para produção, configure um serviço SMTP real (SendGrid, Mailgun, etc.) e variáveis de ambiente adequadas.
+* **cancelado**: exclui o registro
+* **outros**: atualiza o campo `status`
 
 ---
 
-## 📝 Licença
+## Boas Práticas
 
-Este projeto está licenciado sob a MIT License. Consulte o arquivo `LICENSE` para mais detalhes.
+* Verifique as migrations após alterações de esquema.
+* Utilize logs (`storage/logs/laravel.log`) para depuração de falhas.
+* Em produção, configure um serviço de e-mail real (Mailgun, SendGrid, etc.).
 
 ---
 
-**Feliz desenvolvimento!**
+## Licença
 
-**Este projeto foi desenvolvido como teste para a empresa Montink.**
+Este projeto está licenciado sob a [MIT License](LICENSE).
 
-**Criado por Victor Ramirez – Backend Developer**
+---
+
+## Créditos
+
+Este projeto foi desenvolvido como teste para a empresa **Montink**.
+
+**Autor:** Victor Ramirez – *Backend Developer*
 
 ```
 ```
